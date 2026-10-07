@@ -1,0 +1,86 @@
+﻿Component,Maker,Qty,Comments
+10.525 GHz Dopler Effect Microwave Motion Sensor,CQRobot,1,
+NodeMcu V3 ver 0.1,Lolin,5,
+Arduino Nano,-,11,
+Arduino Pro Mini,-,17,
+Arduino LilyPad,-,2,
+Arduino Uno,-,1,
+GY-271,-,2,Brújula digital 3-ejes
+GY-MAX30100,-,2,Oxímetro de pulso y monitor de ritmo cardiaco
+I2C 8-bit I/O expander module,RobotDyn,4,
+03962A,-,5,Cargador USB para baterías LiPo o lithium-ion 3.7V/4.2V
+DS3231,-,6,Reloj de precisión
+MPU-6050,-,8,Sensor de movimiento de 6-ejes. Giróscopo + acelerómetro
+MMA845X,-,2,Acelerómetro digital de 3-ejes
+ADS1115,-,3,"Conversor A/D de precisión de 16 bits, de baja potencia"
+CJMCU-6814,,2,"Sensor de monóxido de carbono (CO), dióxido de nitrógeno (NO2), amoníaco (NH3) y compuestos orgánicos volátiles (VOC)"
+GY-ADS1115/ADS1015,-,2,"Conversor A/D de precisión de 16 bits, de baja potencia"
+RFID-RC522,-,1,RFID reader/writer de 13.56 MHz
+DFPlayer Mini,-,5,Módulo audio MP3 con amplificador interno con slot microSD
+"Display OLED 0.96"" I2C 128x64 SSD1306",Diymore.cc,2,
+Display LCD 16X2,-,1,Display de 2 líneas de 16 caracteres
+MT3608,-,8,"Elevador de voltaje DC-DC, de 2~24V"
+FT232RL,-,4,USB to TTL
+TB6612FNG,-,5,Controlador de 2 motores DC
+GUVA-S12SD,-,3,Sensor de luz ultravioleta analógico
+PCA9685,-,1,16-Channel 12-Bit PWM Driver. Controla hasta 16 servos o LEDs independientemente
+CJMCU-680,-,2,"Sensor de humedad, presión y gas"
+Sensor de vibración analógico piezoeléctrico,-,5,Viene con su respectivo transductor
+MicroSD Card Adapter,sainsmart,2,
+HC-SR04,-,5,"Sensor ultrasónico, distancias de 2 a 400 cm"
+L9110S,-,2,Controlador H-bridge de 2 motores para motores DC y motores de pasos bipolares
+FS1000A,-,4,4 TX + 4 RX. Módulo transmisor/receptor de RF que opera a 433 MHz
+HW-103,-,14,"Sensor de humedad del suelo e higrómetro, con su transductor"
+XL4432-SMT,-,5,"Transceptor inalámbrico LoRA a 433 MHz, con antena de resorte"
+XL2530-D01,-,2,"Transceptor inalámbrico ZigBee a 2.4 GHz, con antena de resorte"
+OV7670,-,1,Cámara VGA CMOS hasta 30 FPS a 640x480
+JSN-SR04T,-,2,"Sensor de distancia ultrasónica de 20 ~ 600 cm, waterproof pero no underwater"
+NEO-6M GPS,-,1,Módulo receptor de satélite GPS en tiempo real
+NEO-7M GPS,-,1,Módulo receptor de satélite GPS en tiempo real
+ESP8266MOD,Ai-Thinker,5,Microchip Wi-Fi
+YL-105,-,5,Adaptador para nRF24L01 con regulador de voltaje a 3.3V
+nRF24L01,-,10,Transceptor RF a 2.4 GHz
+ESP-01,-,6,Módulo WiFi a 2.4 GHz
+JY-MCU,-,5,Módulo Bluetooth 2.0
+nRF24L01 + PA + LNA,-,8,Transceptor RF a 2.4 GHz de rango extendido hasta 1000m
+2PH64011A,-,5,Controlador de motor de pasos unipolar
+A7,Ai-Thinker,1,GPS + GSM/GPRS
+E32-TTL-100,-,2,Transceptor inalámbrico LoRa a 410-441 MHz hasta 3000m
+FZ0430,-,5,Sensor de voltaje DC de 0-25V
+FM62429,-,11,IC de control de volumen electrónico de 2 canales
+CM052B,Texas Instruments,10,IC multiplexor/demultiplexor analógico dual de 4 canales
+25Q128FVSG,winbond,15,IC memoria flash serial de 128 Mbit
+25L3206E,Macronix,10,IC memoria flash serial CMOS de 32 Mbit
+MMA8452X,NXP Semiconductors,20,IC acelerómetro digital de 3-ejes
+BU257,Texas Instruments,10,IC multiplexor/demultiplexor FET analógico de 4-bits 1-de-2
+24LC256L,Microchip,23,IC EEPROM serial cd 256 Kbit (32K x 8)
+D2822A,-,19,IC amplificador de potencia de audio dual de bajo voltaje
+AMS1117-3.3,-,98,Regulador de voltaje de 3.3V
+6206A,-,20,Regulador de voltaje de 3.3V
+24AA02,Microchip,1,IC EEPROM de 2 Kbit
+4A25UID,Microchip,26,IC contiene un UID
+PC817C,-,20,Optoacoplador
+WS2812 Ring x24,duinopeak,1,Anillo de 24 leds
+WS2812 Ring x7,diymall,4,Anillo de 7 leds
+HW-307 12v,-,2,Módulo relé electromecánico 12V
+Módulo 4 relés de estado sólido 5V,-,1,Módulo 4 relés de estado sólido 5V
+HW-316 5V,-,1,Módulo 4 relés electromecánico 5V
+RPD10W1S,-,2,"Fuente de poder AC-DC de 10W (5V/2A, o 12V/1A)"
+Diodos,-,Varios,SMD y regulares
+LEDs,-,Varios,SMD y regulares
+Potenciómetros,-,Varios,
+Capacitores Cerámicos,-,Varios,SMD y regulares
+Capacitores Electrolíticos,-,Varios,
+Resistencias,-,Varios,SMD y regulares
+Transistores PNP,-,Varios,
+Transistores NPN,-,Varios,
+Jetson Nano Developer Kit,NVIDIA,1,"NVIDIA Maxwell GPU, Quad-Core ARM Cortex-A57 Processor, 4GB LPDDR4"
+ZYNQ-7010 Development Board,Digilent,1,Xilinx Zynq XC7Z010-1CLG400C
+Altera DE1 Board,terasIC,1,Cyclone II
+Raspberry Pi Camera V2.1,Raspberry PI,1,Sensor Sony IMX219 (8MP)
+28BYJ-48,ROHS,5,Motor de pasos unipolar DC 5V
+Motor DC,-,5,3V - 6V
+SG90,Tower Pro,10,Microservo 0 - 180°
+Sensor Kit for Arduino,-,1,"36 piezas: joystick, flame, RGB LED, heartbrat, light cup, hall magnetic, relay, linear hall, SMD RGB, 7 color flash, tilt switch, TEMP, big sound, touch, two-color led, laser emit, ball switch, analog temp, small sound, digital temp, two-color, button, photoresistor, IR emission, tracking, buzzer, reed switch, shock, temp and humidity, IR receiver, avoid, passive buzzer, mini reed, rotary encoder, analog hall, tap module + light blocking"
+Micro motor paso a paso miniatura,-,Varios,Los pines son diminutos y no sé cómo voy a usarlos
+Xiao ESP32-C3,Seeed Studio,3,
