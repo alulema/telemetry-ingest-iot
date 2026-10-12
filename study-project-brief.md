@@ -7,10 +7,11 @@
 > Dos fuentes de datos: (1) un simulador de "collares" a escala, y (2) opcional, un nodo físico que
 > monitorea humedad del suelo y temperatura ambiente en el jardín del balcón.
 >
-> Reglas: proyecto de estudio independiente. La primera etapa de nube usará la **Visual Studio Enterprise
-> Subscription** que seleccionaste; en 1–2 meses se evaluará una demo en `personal-website` y, antes de
-> desplegarla, se decidirá si se migra a una suscripción personal de Azure. No usar código ni conocimiento
-> interno/confidencial de Microsoft. En el resume solo van números medidos.
+> Reglas: proyecto de estudio independiente. La primera etapa de nube usará la suscripción
+> **Visual Studio Enterprise Subscription** en la región **Central US**; todos los recursos ARM de Azure
+> estarán definidos en Terraform y dentro de un Resource Group dedicado. En 1–2 meses se evaluará una demo
+> en `personal-website` y, antes de desplegarla, se decidirá si se migra a una suscripción personal de Azure.
+> No usar código ni conocimiento interno/confidencial de Microsoft. En el resume solo van números medidos.
 > En el resume solo van números medidos.
 
 ---

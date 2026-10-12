@@ -1,0 +1,15 @@
+.git
+.github
+.azure
+.terraform
+**/.terraform
+**/*.tfstate
+**/*.tfstate.*
+**/*.tfplan
+**/terraform.tfvars
+**/backend.hcl
+coverage.*
+*.log
+*.md
+*.csv
+README.txt

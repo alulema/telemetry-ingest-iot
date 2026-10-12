@@ -1,10 +1,13 @@
 # Plan detallado de desarrollo
 
 **Proyecto:** Demo de ingesta de telemetría IoT en Azure
-**Estado:** Propuesta para revisión; no iniciar implementación ni despliegues hasta aprobación explícita.
+**Estado:** Bootstrap de Azure desplegado y verificado; el stack de aplicación sigue sujeto a plan, revisión de costos y aprobación explícita.
 **Disponibilidad indicada:** fines de semana completos.
 **Suscripción inicial indicada:** Visual Studio Enterprise Subscription.
 **Hardware:** los sensores capacitivos se esperan aproximadamente 10 días después de la compra; mientras tanto se puede desarrollar con el sensor resistivo disponible.
+**Infraestructura:** todos los recursos ARM de Azure se administrarán con Terraform dentro de un Resource Group dedicado.
+
+**Avance:** el core Go, simulador, API local/cloud, worker y adaptadores de Event Hubs/Cosmos DB/Service Bus ya están implementados. Se agregaron trazas y métricas OpenTelemetry en Go con un Collector sidecar para exportarlas a Application Insights. El 2026-10-08 se aplicó el plan bootstrap de Terraform (9 adiciones, 0 cambios, 0 destrucciones), se verificaron recursos/RBAC y se migró el state al backend privado Blob. Un plan posterior no detectó cambios. No se han desplegado recursos de la aplicación. La estimación bootstrap y el resultado actual de Cost Management están en `.azure/deployment-plan.md`; la consulta inmediata del RG no devolvió filas y los cargos pueden tardar en aparecer.
 
 ## 1. Objetivo y resultado esperado
 
@@ -54,8 +57,9 @@ Xiao ESP32-C3 --MQTT/TLS--> IoT Hub --------+       |
                                           v
                                   API GET de estado
 
-Azure Monitor / Application Insights / Log Analytics
-Terraform + GitHub Actions OIDC + Microsoft Entra ID
+                                  API y worker --OTLP--> Collector sidecar --> Application Insights
+                                  Azure Monitor / Log Analytics
+                                  Terraform + GitHub Actions OIDC + Microsoft Entra ID
 ```
 
 IoT Hub debe tener una ruta configurada a un Event Hub personalizado, con autorización del endpoint otorgada a la identidad administrada del hub. Validar antes de codificar la ruta el comportamiento de particionamiento disponible para esa ruta; no asumir que IoT Hub puede fijar `device_id` como partition key. Si no puede garantizarse, conservar el orden lógico mediante el comparador del estado y la idempotencia de aplicación, no por la entrega del broker.
@@ -69,7 +73,8 @@ Las horas son de trabajo enfocado, no fechas garantizadas. Un fin de semana comp
 ### Fase 0 — Preparación segura y repositorio (1–2 h)
 
 - Revisar y aprobar este plan.
-- Confirmar suscripción y tenant activos por nombre e ID; seleccionar la suscripción de forma explícita solo al iniciar trabajo de Azure.
+- Confirmar suscripción y tenant activos por nombre e ID; seleccionar explícitamente Visual Studio Enterprise Subscription solo al iniciar trabajo de Azure.
+- Crear y administrar el Resource Group dedicado mediante Terraform. No crear recursos del proyecto fuera de ese grupo.
 - Revisar si la suscripción permite crear los servicios previstos, sus cuotas, presupuestos, créditos y facturación.
 - Establecer un budget/alertas antes de desplegar recursos facturables.
 - Definir cómo bootstrapear el backend Terraform de Blob Storage y trasladar el state local a remoto.
@@ -99,6 +104,18 @@ Las horas son de trabajo enfocado, no fechas garantizadas. Un fin de semana comp
 
 **Salida:** misma configuración y semilla producen el mismo conjunto de eventos y verdad de referencia.
 
+**Mediciones locales (2026-10-07, semilla `20261007`, 60 eventos/dispositivo):**
+
+| Dispositivos | Generados | Publicados | Duplicados inyectados/descartados | Fuera de orden | Pendientes offline | Estado final |
+|--------------|-----------|------------|----------------------------------|---------------|-------------------|--------------|
+| 100 | 6.000 | 6.136 | 185/185 | 4.547 | 49 | 100 dispositivos |
+| 1.000 | 60.000 | 61.463 | 1.815/1.815 | 45.230 | 352 | 1.000 dispositivos |
+| 10.000 | 600.000 | 615.016 | 18.164/18.164 | 452.019 | 3.148 | 10.000 dispositivos |
+
+La corrida de 10.000 dispositivos se repitió con la misma semilla y produjo los
+mismos contadores. Son resultados del simulador local en memoria; no representan
+rendimiento, latencia ni costo de Azure.
+
 ### Fase 3 — Persistencia local y recuperación (3–5 h)
 
 - Definir interfaces de persistencia que permitan probar sin servicios cloud.
@@ -110,14 +127,15 @@ Las horas son de trabajo enfocado, no fechas garantizadas. Un fin de semana comp
 
 ### Fase 4 — Terraform y cimientos de Azure (4–7 h)
 
-- Crear módulos pequeños para resource group, observabilidad, Event Hubs, Cosmos DB, Service Bus y Container Apps.
+- Crear módulos pequeños para resource group (incluido en Terraform), observabilidad, Event Hubs, Cosmos DB, Service Bus y Container Apps.
 - Configurar tags, región única, nombres, límites de escala a cero cuando proceda y opciones de bajo costo.
-- Aprovisionar storage del state Terraform, asegurar acceso y bloqueo por lease; no versionar state.
+- [x] Aprovisionar el RG dedicado y storage de state/checkpoints; migrar el state del bootstrap al backend privado remoto. No versionar state.
 - Crear Managed Identity y asignaciones RBAC mínimas.
 - Configurar pipeline de CI con OIDC; separar `plan` de `apply` y requerir aprobación para cambios de infraestructura.
-- Configurar presupuesto y alertas; documentar qué costos continúan hasta ejecutar `destroy`.
+- Configurar la alerta mensual de USD 30 ya confirmada, guardar su destinatario solo en configuración Terraform local ignorada y documentar que no es un hard cap.
+- Registrar costos variables y volver a validar tarifas/beneficios con un plan concreto antes de `apply`.
 
-**Salida:** `terraform fmt`/`validate` y CI de `plan` pasan; `apply` queda bajo aprobación explícita.
+**Salida:** `terraform fmt`/`validate` pasan; el bootstrap se aplicó y su state remoto no muestra drift. El plan y `apply` del stack de aplicación siguen bajo aprobación explícita.
 
 ### Fase 5 — Ingesta cloud y worker Go (5–9 h)
 
@@ -142,13 +160,14 @@ Las horas son de trabajo enfocado, no fechas garantizadas. Un fin de semana comp
 
 ### Fase 7 — Observabilidad y validación de carga (3–6 h)
 
-- Emitir métricas para ingestión, duplicados, desorden, retraso, latencia, fallos, checkpoint y cuarentena.
-- Configurar Application Insights, Azure Monitor, Log Analytics, dashboard y alertas de costo/errores.
+- Emitir métricas para ingestión, duplicados, desorden, retraso de ingesta, duración de procesamiento/checkpoint, fallos y cuarentena.
+- Exportar trazas, métricas HTTP, resultados de procesamiento y duración de checkpoints a Application Insights mediante OpenTelemetry Collector.
+- Configurar dashboard y alertas de costo/errores tras una aprobación independiente del despliegue.
 - Medir primero con 100 y 1.000 dispositivos; probar 10.000 solo cuando la cuota y el presupuesto estén revisados.
 - Ejecutar desconexión/reconexión masiva y replay.
 - Capturar metodología, configuración, fecha, costos facturados y resultados reales.
 
-**Salida:** el dashboard responde a una corrida reproducible y los números pueden reconstruirse desde logs y configuración.
+**Avance:** la instrumentación OpenTelemetry y el export OTLP local se validaron contra un servidor de prueba. El simulador local pasó una corrida reproducible de 10.000 dispositivos, pero no mide el backend Azure. El dashboard, la carga/replay cloud y la verificación de recepción real en Application Insights requieren un despliegue aprobado y siguen pendientes.
 
 ### Fase 8 — Hardware de balcón (al final; 4–8 h más el tiempo de llegada)
 
@@ -194,8 +213,9 @@ Las horas son de trabajo enfocado, no fechas garantizadas. Un fin de semana comp
 
 ## 6. Puertas de aprobación y límites operativos
 
-- **Ahora:** solo revisar este plan y los documentos públicos del repositorio. No crear recursos Azure, no configurar una cuenta, no ejecutar `terraform apply` y no empezar el backend.
-- **Después de la aprobación del plan:** se puede empezar la fase 0 y el desarrollo local. El usuario confirmará antes de los primeros recursos Azure facturables y antes de cualquier `apply`.
+- **Autorización recibida:** el usuario autorizó avanzar de forma autónoma hasta donde sea posible y detenerse ante bloqueos; seleccionó Visual Studio Enterprise Subscription y Central US. Se puede continuar con implementación local y preparación de Terraform.
+- Antes de ejecutar `terraform apply` y crear recursos facturables, mostrar plan exacto y presupuesto/costo a confirmar por el usuario.
+- Crear y administrar el Resource Group dedicado mediante Terraform; todos los recursos ARM de Azure de la demo residirán en él. Los objetos de Microsoft Entra son recursos de directorio y se gestionarán con Terraform, pero no pueden ser hijos de un Resource Group.
 - Usar la Visual Studio Enterprise Subscription elegida inicialmente, verificando su tipo de beneficio, presupuesto, cargos y permiso para uso personal. No asumir que créditos/beneficios duran todo el proyecto.
 - Elegir explícitamente la suscripción activa antes de cada operación que cree o modifique recursos; no depender de la suscripción predeterminada del CLI.
 - No guardar credenciales, tokens, certificados privados, `*.tfstate`, archivos de entorno ni datos reales de dispositivos en Git.

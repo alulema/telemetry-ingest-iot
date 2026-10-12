@@ -1,0 +1,5 @@
+subscription_id                    = "replace-with-confirmed-subscription-id"
+checkpoint_storage_account_name    = "replace-with-bootstrap-output"
+budget_amount                     = 30
+budget_contact_emails             = []
+budget_start_date                 = "2026-10-01T00:00:00Z"
