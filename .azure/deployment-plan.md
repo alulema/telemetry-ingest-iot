@@ -329,3 +329,12 @@ Sources:
 2. Refresh the full application cost estimate and obtain separate review/approval before any application apply.
 3. Verify Azure replay/load behavior and live Azure Monitor telemetry only after application deployment is approved.
 4. Publish images through CI and verify anonymous GHCR pulls; add Terraform plan automation with OIDC if needed.
+
+## Application stack deployment (2026-10-12)
+
+- `infra/app` applied after explicit approval: 26 resources in `rg-telemetry-ingest-iot-dev` (Central US), state in the private Blob backend (key `telemetry-ingest-iot-app.tfstate`).
+- Fixes needed during apply: Event Hubs Basic supports only the `$Default` consumer group; IoT Hub F1 requires 2 partitions; Container Apps environment needs `logs_destination = "log-analytics"`; KEDA identity value is `System`.
+- Processor bug fixed: `ReceiveEvents` blocked waiting for a full batch; now uses a 5 s receive timeout (commit after `79c8f62`).
+- Smoke test: POST /v1/events returned 202 (duplicate accepted idempotently), GET state returned 200 with the latest event after processing. RBAC for the processor identity verified live.
+- Known benign drift: the provider reports the Azure-default `Consumption` workload profile as a change.
+- Pending: Application Insights telemetry check, cloud load tests (100 then 1,000 devices), dashboard/alerts, real cost measurement.
