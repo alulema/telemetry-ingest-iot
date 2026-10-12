@@ -2,6 +2,7 @@ resource "azurerm_container_app_environment" "project" {
   name                       = "cae-telemetry-${random_string.suffix.result}"
   location                   = data.azurerm_resource_group.project.location
   resource_group_name        = data.azurerm_resource_group.project.name
+  logs_destination           = "log-analytics"
   log_analytics_workspace_id = azurerm_log_analytics_workspace.project.id
   tags                       = var.tags
 }
@@ -17,7 +18,7 @@ resource "azurerm_iothub" "project" {
   resource_group_name          = data.azurerm_resource_group.project.name
   local_authentication_enabled = false
   min_tls_version              = "1.2"
-  event_hub_partition_count    = 4
+  event_hub_partition_count    = 2
 
   sku {
     name     = "F1"
@@ -215,11 +216,11 @@ resource "azurerm_container_app" "processor" {
     custom_scale_rule {
       name             = "eventhub-backlog"
       custom_rule_type = "azure-eventhub"
-      identity_id      = "system"
+      identity_id      = "System"
       metadata = {
         eventHubNamespace         = azurerm_eventhub_namespace.project.name
         eventHubName              = azurerm_eventhub.telemetry.name
-        consumerGroup             = azurerm_eventhub_consumer_group.processor.name
+        consumerGroup             = "$Default"
         unprocessedEventThreshold = "32"
         blobContainer             = "event-checkpoints"
         storageAccountName        = data.azurerm_storage_account.checkpoints.name
@@ -243,7 +244,7 @@ resource "azurerm_container_app" "processor" {
       }
       env {
         name  = "EVENTHUB_CONSUMER_GROUP"
-        value = azurerm_eventhub_consumer_group.processor.name
+        value = "$Default"
       }
       env {
         name  = "CHECKPOINT_STORAGE_ACCOUNT"

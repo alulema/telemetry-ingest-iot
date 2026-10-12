@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -115,11 +116,13 @@ func processPartition(ctx context.Context, partition *eventhub.ProcessorPartitio
 		}
 	}()
 	for ctx.Err() == nil {
-		events, err := partition.ReceiveEvents(ctx, 32, nil)
-		if err != nil {
-			if ctx.Err() != nil {
-				return
-			}
+		receiveCtx, cancelReceive := context.WithTimeout(ctx, 5*time.Second)
+		events, err := partition.ReceiveEvents(receiveCtx, 32, nil)
+		cancelReceive()
+		if ctx.Err() != nil {
+			return
+		}
+		if err != nil && !errors.Is(err, context.DeadlineExceeded) {
 			log.Printf("receive Event Hubs partition %s: %v", partition.PartitionID(), err)
 			if !wait(ctx, time.Second) {
 				return

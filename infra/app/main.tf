@@ -53,14 +53,6 @@ resource "azurerm_eventhub" "telemetry" {
   message_retention = 1
 }
 
-resource "azurerm_eventhub_consumer_group" "processor" {
-  name                = "telemetry-processor"
-  resource_group_name = data.azurerm_resource_group.project.name
-  namespace_name      = azurerm_eventhub_namespace.project.name
-  eventhub_name       = azurerm_eventhub.telemetry.name
-  user_metadata       = "Consumer group for the Go telemetry processor."
-}
-
 resource "azurerm_cosmosdb_account" "project" {
   name                = "cosmos-telemetry-${random_string.suffix.result}"
   location            = data.azurerm_resource_group.project.location
